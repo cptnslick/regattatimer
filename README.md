@@ -7,7 +7,7 @@ a horn at 5 minutes (warning), 4 minutes (preparatory), 1 minute, and 0 minutes
 A front panel switch selects one run or two runs back to back. On two runs the
 second class takes its warning signal at the moment the first class starts, the
 way the club runs non-spinnaker off the spinnaker start, so the whole sequence
-is ten minutes with a double blast in the middle.
+is ten minutes with a long blast in the middle.
 
 ## Signals
 
@@ -29,7 +29,7 @@ Two runs, elapsed time from pressing start:
 | 0:00 | class 1 warning | 1 short | 5 |
 | 1:00 | class 1 preparatory | 1 short | 4 |
 | 4:00 | class 1 one minute | 1 long | 1, blinking |
-| 5:00 | **class 1 start** + class 2 warning | 2 short | all flash, then 5 |
+| 5:00 | **class 1 start** + class 2 warning | 1 long | all flash, then 5 |
 | 6:00 | class 2 preparatory | 1 short | 4 |
 | 9:00 | class 2 one minute | 1 long | 1, blinking |
 | 10:00 | **class 2 start** | 1 short | all flash |

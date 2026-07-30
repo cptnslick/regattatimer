@@ -110,8 +110,10 @@ int main() {
   if (g.size() == 7) {
     uint32_t t0 = g[0].startMs;
     const uint32_t expect[7] = {0, 60, 240, 300, 360, 540, 600};
-    const int blasts[7] = {1, 1, 1, 2, 1, 1, 1};
-    bool timesOk = true, blastsOk = true;
+    // Long at the two one-minute signals, and at the merged 5:00 signal where
+    // class 1 starts and class 2 is warned. Everything else short.
+    const bool isLong[7] = {false, false, true, true, false, true, false};
+    bool timesOk = true, blastsOk = true, lengthsOk = true;
     for (int i = 0; i < 7; i++) {
       long d = (long)(g[i].startMs - t0);
       long want = (long)expect[i] * 1000;
@@ -119,13 +121,20 @@ int main() {
         timesOk = false;
         printf("     signal %d at %ld ms, expected %ld ms\n", i, d, want);
       }
-      if (g[i].blasts != blasts[i]) {
+      if (g[i].blasts != 1) {
         blastsOk = false;
-        printf("     signal %d has %d blast(s), expected %d\n", i, g[i].blasts, blasts[i]);
+        printf("     signal %d has %d blast(s), expected 1\n", i, g[i].blasts);
+      }
+      uint32_t wantMs = isLong[i] ? HORN_LONG_MS : HORN_SHORT_MS;
+      if (g[i].firstOnMs != wantMs) {
+        lengthsOk = false;
+        printf("     signal %d blast is %u ms, expected %u ms\n", i,
+               g[i].firstOnMs, wantMs);
       }
     }
     check(timesOk, "signals land at 5:00 4:00 1:00 0:00 for both classes");
-    check(blastsOk, "double blast where class 1 starts and class 2 is warned");
+    check(blastsOk, "every signal is a single blast");
+    check(lengthsOk, "one long blast where class 1 starts and class 2 is warned");
   }
 
   // ---------------- abort ----------------
