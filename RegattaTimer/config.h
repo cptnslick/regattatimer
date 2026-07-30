@@ -37,8 +37,8 @@ constexpr uint32_t CLASS_INTERVAL_SEC = 300;
 // ---------------------------------------------------------------------------
 // Horn shaping
 // ---------------------------------------------------------------------------
-constexpr uint16_t HORN_SHORT_MS = 1000;
-constexpr uint16_t HORN_LONG_MS = 2500;  // one-minute signal
+constexpr uint16_t HORN_SHORT_MS = 1000; // warning, preparatory, start
+constexpr uint16_t HORN_LONG_MS = 3000;  // one-minute signal
 constexpr uint16_t HORN_GAP_MS = 400;    // silence between repeated blasts
 constexpr uint16_t HORN_MAX_ON_MS = 4000; // hard cap, protects the compressor
 

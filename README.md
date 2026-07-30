@@ -9,30 +9,35 @@ second class takes its warning signal at the moment the first class starts, the
 way the club runs non-spinnaker off the spinnaker start, so the whole sequence
 is ten minutes with a long blast in the middle.
 
+Every signal is a single blast: one second at the warning, preparatory and
+start signals, three seconds at the one-minute signal. The 3 and 2 minute
+marks are silent, lamps only. Blast lengths are `HORN_SHORT_MS` and
+`HORN_LONG_MS` in `config.h`.
+
 ## Signals
 
 Single run, elapsed time from pressing start:
 
 | Time | Signal | Horn | Lamp |
 |---|---|---|---|
-| 0:00 | warning (5 min) | 1 short | 5 |
-| 1:00 | preparatory (4 min) | 1 short | 4 |
+| 0:00 | warning (5 min) | 1 s | 5 |
+| 1:00 | preparatory (4 min) | 1 s | 4 |
 | 2:00 | — | — | 3 |
 | 3:00 | — | — | 2 |
-| 4:00 | one minute | 1 long | 1, blinking |
-| 5:00 | **start** | 1 short | all flash |
+| 4:00 | one minute | 3 s | 1, blinking |
+| 5:00 | **start** | 1 s | all flash |
 
 Two runs, elapsed time from pressing start:
 
 | Time | Signal | Horn | Lamp |
 |---|---|---|---|
-| 0:00 | class 1 warning | 1 short | 5 |
-| 1:00 | class 1 preparatory | 1 short | 4 |
-| 4:00 | class 1 one minute | 1 long | 1, blinking |
-| 5:00 | **class 1 start** + class 2 warning | 1 long | all flash, then 5 |
-| 6:00 | class 2 preparatory | 1 short | 4 |
-| 9:00 | class 2 one minute | 1 long | 1, blinking |
-| 10:00 | **class 2 start** | 1 short | all flash |
+| 0:00 | class 1 warning | 1 s | 5 |
+| 1:00 | class 1 preparatory | 1 s | 4 |
+| 4:00 | class 1 one minute | 3 s | 1, blinking |
+| 5:00 | **class 1 start** + class 2 warning | 3 s | all flash, then 5 |
+| 6:00 | class 2 preparatory | 1 s | 4 |
+| 9:00 | class 2 one minute | 3 s | 1, blinking |
+| 10:00 | **class 2 start** | 1 s | all flash |
 
 The lamp for minute N stays lit through the whole of that minute, so 4:59
 remaining still shows the 5 lamp. The 1 lamp blinks through the final minute

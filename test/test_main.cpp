@@ -72,6 +72,12 @@ int main() {
   gPinRead[PIN_RUNSEL] = HIGH;   // open == one run
   setup();
 
+  // ---------------- blast lengths ----------------
+  printf("\n== blast lengths ==\n");
+  check(HORN_SHORT_MS == 1000, "short blast is 1 s");
+  check(HORN_LONG_MS == 3000, "one-minute blast is 3 s");
+  check(HORN_LONG_MS <= HORN_MAX_ON_MS, "long blast is within the horn cap");
+
   // ---------------- single run ----------------
   printf("\n== single run ==\n");
   gHornEdges.clear();
@@ -91,6 +97,13 @@ int main() {
           "one blast per signal");
     check(g[2].firstOnMs == HORN_LONG_MS, "one-minute blast is long");
     check(g[0].firstOnMs == HORN_SHORT_MS, "warning blast is short");
+    check(g[3].firstOnMs == HORN_SHORT_MS, "start blast is short");
+    bool silentMiddle = true;
+    for (const auto &grp : g) {
+      long d = (long)(grp.startMs - t0);
+      if (d > 60500 && d < 239500) silentMiddle = false;
+    }
+    check(silentMiddle, "3 and 2 minute marks are silent");
   }
   run(40 * 1000);  // let the finish hold expire
   check(gState == State::Finished, "single run reaches Finished");
