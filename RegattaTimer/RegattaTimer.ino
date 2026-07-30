@@ -4,7 +4,7 @@
 // (preparatory), 1 minute, and 0 minutes (start). A front panel switch selects
 // one run or two back-to-back runs; with two runs the second class takes its
 // warning signal on the first class's start, so the two sequences overlap and
-// the whole thing runs 10 minutes with a long blast in the middle.
+// the whole thing runs 10 minutes with one blast in the middle covering both.
 //
 // Everything is non-blocking: the horn, the lamps and the button all run off
 // millis() so the signal times never drift behind a delay() somewhere.
@@ -136,9 +136,10 @@ void addSignal(uint32_t atSec, uint8_t blasts, bool longBlast) {
   for (uint8_t i = 0; i < gSignalCount; i++) {
     if (gSignals[i].atSec == atSec) {
       // Two classes share this instant: class 1 starting while class 2 takes
-      // its warning. That is one long blast, not a blast per class.
+      // its warning. One blast covers both, not a blast per class. Both are
+      // one second signals, so the merged blast is short.
       gSignals[i].blasts = 1;
-      gSignals[i].longBlast = true;
+      gSignals[i].longBlast = gSignals[i].longBlast || longBlast;
       return;
     }
   }

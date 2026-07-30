@@ -123,9 +123,9 @@ int main() {
   if (g.size() == 7) {
     uint32_t t0 = g[0].startMs;
     const uint32_t expect[7] = {0, 60, 240, 300, 360, 540, 600};
-    // Long at the two one-minute signals, and at the merged 5:00 signal where
-    // class 1 starts and class 2 is warned. Everything else short.
-    const bool isLong[7] = {false, false, true, true, false, true, false};
+    // Long only at the two one-minute signals. The merged 5:00 signal, where
+    // class 1 starts and class 2 is warned, is a single short blast.
+    const bool isLong[7] = {false, false, true, false, false, true, false};
     bool timesOk = true, blastsOk = true, lengthsOk = true;
     for (int i = 0; i < 7; i++) {
       long d = (long)(g[i].startMs - t0);
@@ -147,7 +147,7 @@ int main() {
     }
     check(timesOk, "signals land at 5:00 4:00 1:00 0:00 for both classes");
     check(blastsOk, "every signal is a single blast");
-    check(lengthsOk, "one long blast where class 1 starts and class 2 is warned");
+    check(lengthsOk, "1 s blast where class 1 starts and class 2 is warned");
   }
 
   // ---------------- abort ----------------

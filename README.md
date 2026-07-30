@@ -7,10 +7,12 @@ a horn at 5 minutes (warning), 4 minutes (preparatory), 1 minute, and 0 minutes
 A front panel switch selects one run or two runs back to back. On two runs the
 second class takes its warning signal at the moment the first class starts, the
 way the club runs non-spinnaker off the spinnaker start, so the whole sequence
-is ten minutes with a long blast in the middle.
+is ten minutes with a single blast in the middle serving both classes.
 
 Every signal is a single blast: one second at the warning, preparatory and
-start signals, three seconds at the one-minute signal. The 3 and 2 minute
+start signals, three seconds at the one-minute signal. The 5:00 signal in a
+two run sequence is class 1 starting and class 2 being warned at once, and
+sounds as one 1 s blast rather than a blast for each. The 3 and 2 minute
 marks are silent, lamps only. Blast lengths are `HORN_SHORT_MS` and
 `HORN_LONG_MS` in `config.h`.
 
@@ -34,7 +36,7 @@ Two runs, elapsed time from pressing start:
 | 0:00 | class 1 warning | 1 s | 5 |
 | 1:00 | class 1 preparatory | 1 s | 4 |
 | 4:00 | class 1 one minute | 3 s | 1, blinking |
-| 5:00 | **class 1 start** + class 2 warning | 3 s | all flash, then 5 |
+| 5:00 | **class 1 start** + class 2 warning | 1 s | all flash, then 5 |
 | 6:00 | class 2 preparatory | 1 s | 4 |
 | 9:00 | class 2 one minute | 3 s | 1, blinking |
 | 10:00 | **class 2 start** | 1 s | all flash |
