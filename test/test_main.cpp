@@ -195,6 +195,74 @@ int main() {
     check(seen == c.want, std::string(c.what) + " (mask " + mask + ")");
   }
 
+  // ---------------- recall part way through a two-class start ----------------
+  // Reaching here the lamp section left a two-class sequence part way through.
+  printf("\n== recall ==\n");
+  pressButton(LONG_PRESS_MS + 200);
+  gPinRead[PIN_RUNSEL] = LOW;      // selector still says two runs throughout
+  run(2000);
+  gPendingRuns = 0;
+
+  // Recall after class 1 has started: only class 2 still needs a sequence.
+  pressButton(100);
+  run(400 * 1000);                 // past the 5:00 class 1 start
+  check(gState == State::Running, "two-class sequence running at 6:40");
+  pressButton(LONG_PRESS_MS + 200);
+  check(gPendingRuns == 1, "second-half recall leaves one class pending");
+  check(readRunSelector() == 2, "selector still reads two runs");
+  uint8_t idleMask = 0;
+  for (int i = 0; i < 2000; i++) { gVirtualMs++; loop(); idleMask |= lampMaskNow(); }
+  check(idleMask == 0x01, "idle shows one lamp after a second-half recall");
+
+  gHornEdges.clear();
+  pressButton(100);
+  check(gRunsLatched == 1, "restart after second-half recall runs one class");
+  run(330 * 1000);
+  g = groupBlasts();
+  check(g.size() == 4, "restart fires 4 signals, got " + std::to_string(g.size()));
+  if (g.size() == 4) {
+    long span = (long)(g[3].startMs - g[0].startMs);
+    check(span >= 299500 && span <= 300500, "restart is a 5 minute sequence");
+  }
+  run(40 * 1000);
+  pressButton(100);                // Finished -> Idle
+  check(gPendingRuns == 0, "pending count is spent by the restart");
+
+  // Recall before class 1 starts: both classes still need a sequence.
+  run(2000);
+  pressButton(100);
+  run(100 * 1000);
+  pressButton(LONG_PRESS_MS + 200);
+  check(gPendingRuns == 2, "first-half recall leaves both classes pending");
+  pressButton(100);
+  check(gRunsLatched == 2, "restart before any start still runs both classes");
+
+  // Flipping the selector clears a pending count.
+  pressButton(LONG_PRESS_MS + 200);
+  run(400 * 1000);                 // idle, time passing changes nothing
+  pressButton(100);
+  run(400 * 1000);
+  pressButton(LONG_PRESS_MS + 200);
+  check(gPendingRuns == 1, "pending count set before the selector flip");
+  gPinRead[PIN_RUNSEL] = HIGH;     // flip to one run
+  run(200);
+  gPinRead[PIN_RUNSEL] = LOW;      // and back to two
+  run(200);
+  check(gPendingRuns == 0, "flipping the selector clears the pending count");
+  pressButton(100);
+  check(gRunsLatched == 2, "selector governs again after the flip");
+  pressButton(LONG_PRESS_MS + 200);
+
+  // Switch bounce must not be mistaken for a deliberate flip.
+  gPendingRuns = 1;
+  for (int i = 0; i < 6; i++) {
+    gPinRead[PIN_RUNSEL] = (i & 1) ? HIGH : LOW;
+    run(DEBOUNCE_MS / 3);
+  }
+  gPinRead[PIN_RUNSEL] = LOW;
+  run(200);
+  check(gPendingRuns == 1, "selector bounce does not clear the pending count");
+
   printf("\n%s (%d failure%s)\n", gFailures ? "FAILED" : "PASSED", gFailures,
          gFailures == 1 ? "" : "s");
   return gFailures ? 1 : 0;

@@ -55,6 +55,16 @@ uint32_t gSequenceStartMs = 0;
 uint8_t gRunsLatched = 1;   // number of classes this sequence was armed for
 int32_t gLastReportedSec = -1;
 
+// Set when a sequence is aborted part way through: the number of classes that
+// had not started yet, and so still need a sequence. It overrides the run
+// selector for the next start, which is what stops a recall in the second half
+// of a two class start from re-running the whole ten minutes. Zero means the
+// selector governs as usual.
+uint8_t gPendingRuns = 0;
+
+// Debounced run selector, true when the switch is closed to GND.
+bool gSelectorClosed = false;
+
 const uint8_t kLedPins[5] = {PIN_LED_1MIN, PIN_LED_2MIN, PIN_LED_3MIN,
                              PIN_LED_4MIN, PIN_LED_5MIN};
 
@@ -164,9 +174,39 @@ void buildSchedule(uint8_t runs) {
 // Controls
 // ---------------------------------------------------------------------------
 uint8_t readRunSelector() {
-  bool closed = (digitalRead(PIN_RUNSEL) == LOW); // pullup: closed reads low
-  bool twoRuns = RUNSEL_CLOSED_MEANS_TWO_RUNS ? closed : !closed;
+  bool twoRuns = RUNSEL_CLOSED_MEANS_TWO_RUNS ? gSelectorClosed : !gSelectorClosed;
   return twoRuns ? 2 : 1;
+}
+
+// Debounce the selector, and treat a deliberate flip as "forget the pending
+// run count". Debouncing matters here: switch bounce read as a flip would
+// silently throw away the override after a recall.
+void serviceSelector(uint32_t now) {
+  static bool lastRaw = false;
+  static uint32_t lastChangeMs = 0;
+
+  bool raw = (digitalRead(PIN_RUNSEL) == LOW); // pullup: closed reads low
+  if (raw != lastRaw) {
+    lastRaw = raw;
+    lastChangeMs = now;
+  }
+  if (now - lastChangeMs >= DEBOUNCE_MS && raw != gSelectorClosed) {
+    gSelectorClosed = raw;
+    if (gPendingRuns != 0) {
+      gPendingRuns = 0;
+      Serial.println("[timer] selector moved, pending run count cleared");
+    }
+    Serial.printf("[timer] selector: %u run(s)\n", readRunSelector());
+  }
+}
+
+// How many classes have not started yet, and so still need a sequence.
+uint8_t classesNotStarted(uint32_t elapsedMs) {
+  uint8_t n = 0;
+  for (uint8_t i = 0; i < gClassCount; i++) {
+    if (elapsedMs < gClassStartSec[i] * 1000UL) n++;
+  }
+  return n;
 }
 
 struct ButtonEvents {
@@ -218,8 +258,24 @@ void enterIdle(const char *why) {
   Serial.printf("[timer] idle (%s)\n", why);
 }
 
+// Abort a running sequence. Only the classes that had not started yet are
+// carried over, so a recall after the first class has started re-runs a single
+// five minute sequence rather than the whole ten minutes.
+void abortSequence(uint32_t now) {
+  if (gState == State::Running) {
+    gPendingRuns = classesNotStarted(now - gSequenceStartMs);
+    if (gPendingRuns != 0 && gPendingRuns < gRunsLatched) {
+      Serial.printf("[timer] recall: %u of %u class(es) still to start\n",
+                    gPendingRuns, gRunsLatched);
+    }
+  }
+  enterIdle("aborted");
+}
+
 void startSequence(uint32_t now) {
-  gRunsLatched = readRunSelector();
+  // A pending count from a recall wins over the selector, for this start only.
+  gRunsLatched = gPendingRuns ? gPendingRuns : readRunSelector();
+  gPendingRuns = 0;
   buildSchedule(gRunsLatched);
   gSequenceStartMs = now;
   gLastReportedSec = -1;
@@ -320,8 +376,9 @@ void runSequence(uint32_t now) {
 }
 
 void showIdle(uint32_t now) {
-  // Lamps 1..N show how many runs the selector is set for.
-  uint8_t runs = readRunSelector();
+  // Lamps 1..N show what the next press will actually run, which after a
+  // recall is the pending count rather than whatever the selector says.
+  uint8_t runs = gPendingRuns ? gPendingRuns : readRunSelector();
   uint8_t mask = (runs >= 2) ? 0x03 : 0x01;
   setLampMask(flashPhase(now, IDLE_BLINK_MS) ? mask : 0);
 }
@@ -339,6 +396,7 @@ void setup() {
 
   pinMode(PIN_BUTTON, INPUT_PULLUP);
   pinMode(PIN_RUNSEL, INPUT_PULLUP);
+  gSelectorClosed = (digitalRead(PIN_RUNSEL) == LOW);
 
   Serial.begin(115200);
   delay(100);
@@ -357,9 +415,11 @@ void setup() {
 void loop() {
   uint32_t now = millis();
 
+  serviceSelector(now);
+
   ButtonEvents btn = serviceButton(now);
   if (btn.longPress) {
-    enterIdle("aborted");
+    abortSequence(now);
   } else if (btn.shortPress) {
     switch (gState) {
       case State::Idle:

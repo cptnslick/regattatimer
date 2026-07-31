@@ -51,9 +51,36 @@ seconds at each start, and for thirty seconds after the last one.
 - **Start / reset button** — tap while idle to arm the sequence. Tap after a
   finished sequence to return to idle. Taps during a sequence are ignored, so a
   knock against the panel cannot restart the countdown.
-- **Hold the button 1.5 s** — abort, silence the horn, return to idle.
+- **Hold the button 1.5 s** — recall: abort, silence the horn, return to idle.
 - **Run selector** — read when you arm, so flipping it mid-sequence changes
-  nothing. While idle, one lamp lit means one run, two lamps means two runs.
+  nothing. While idle, one lamp lit means the next press runs one class, two
+  lamps means two.
+
+## Recall part way through
+
+A recall only re-runs the classes that had not started yet, so a fleet over
+early in the second half of a two-class start does not cost you the full ten
+minutes again:
+
+| Recall at | Classes not yet started | Next press runs |
+|---|---|---|
+| two classes, before 5:00 | both | 10 min, both classes |
+| two classes, at or after 5:00 | class 2 only | 5 min, one class |
+| one class, any time | that class | 5 min |
+
+Recalling before 5:00 means class 1 never started, so both fleets still need a
+sequence and the full ten minutes is right. After 5:00 class 1 is racing and
+only class 2 needs sending again.
+
+The pending count overrides the selector for that one start, and the idle lamps
+show it: one lamp after a second-half recall even with the switch still set to
+two. It is spent as soon as you start, so the sequence after that follows the
+switch again. To cancel it before then, flip the run selector — the flip is
+debounced, so switch bounce cannot throw the count away by accident.
+
+Recalling a class that has already started, while a later class is still
+counting down, is not something the timer tries to do. There is no good
+automatic answer, and most clubs restart that fleet after the others.
 
 ## Wiring
 
