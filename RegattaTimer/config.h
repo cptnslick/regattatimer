@@ -56,4 +56,8 @@ constexpr uint16_t IDLE_BLINK_MS = 1000;   // run-mode indication while idle
 // Controls
 // ---------------------------------------------------------------------------
 constexpr uint16_t DEBOUNCE_MS = 30;
-constexpr uint16_t LONG_PRESS_MS = 1500; // hold this long to abort a sequence
+constexpr uint16_t LONG_PRESS_MS = 1500;   // hold this long for a full reset
+// A tap resets a running sequence, so a double tap on the start button would
+// otherwise arm and immediately kill it. Taps are ignored for this long after
+// arming. Well short of the five minutes before anything can be over early.
+constexpr uint16_t RESTART_GUARD_MS = 1000;

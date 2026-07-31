@@ -150,20 +150,33 @@ int main() {
     check(lengthsOk, "1 s blast where class 1 starts and class 2 is warned");
   }
 
-  // ---------------- abort ----------------
-  printf("\n== abort ==\n");
+  // ---------------- recall by tapping start ----------------
+  printf("\n== recall by tap ==\n");
   run(40 * 1000);
   pressButton(100);            // back to idle from Finished
   gHornEdges.clear();
   pressButton(100);            // start
   run(30 * 1000);
-  check(gState == State::Running, "running before abort");
-  pressButton(LONG_PRESS_MS + 200);
-  check(gState == State::Idle, "long press aborts to Idle");
+  check(gState == State::Running, "running before the recall tap");
+  pressButton(100);
+  check(gState == State::Idle, "a tap recalls to Idle");
   bool hornOff = (gPinLevel[PIN_HORN] == HIGH) != HORN_ACTIVE_HIGH;
-  check(hornOff, "horn is off after abort");
+  check(hornOff, "horn is off after the recall");
   run(300 * 1000);
-  check(groupBlasts().size() == 1, "no further signals after abort");
+  check(groupBlasts().size() == 1, "no further signals after the recall");
+  check(gState == State::Idle, "stays idle until the next tap");
+  pressButton(100);
+  check(gState == State::Running, "the next tap sends them again");
+
+  // A double tap must not arm and immediately kill the sequence.
+  pressButton(LONG_PRESS_MS + 200);   // full reset back to idle
+  pressButton(100);                   // arm
+  check(gState == State::Running, "armed by the first tap");
+  pressButton(100);                   // second tap, inside the guard window
+  check(gState == State::Running, "a double tap does not kill the sequence");
+  run(RESTART_GUARD_MS);
+  pressButton(100);
+  check(gState == State::Idle, "a tap after the guard window recalls");
 
   // ---------------- lamps over a two-run sequence ----------------
   printf("\n== lamps ==\n");
@@ -207,7 +220,7 @@ int main() {
   pressButton(100);
   run(400 * 1000);                 // past the 5:00 class 1 start
   check(gState == State::Running, "two-class sequence running at 6:40");
-  pressButton(LONG_PRESS_MS + 200);
+  pressButton(100);
   check(gPendingRuns == 1, "second-half recall leaves one class pending");
   check(readRunSelector() == 2, "selector still reads two runs");
   uint8_t idleMask = 0;
@@ -232,7 +245,7 @@ int main() {
   run(2000);
   pressButton(100);
   run(100 * 1000);
-  pressButton(LONG_PRESS_MS + 200);
+  pressButton(100);
   check(gPendingRuns == 2, "first-half recall leaves both classes pending");
   pressButton(100);
   check(gRunsLatched == 2, "restart before any start still runs both classes");
@@ -242,7 +255,7 @@ int main() {
   run(400 * 1000);                 // idle, time passing changes nothing
   pressButton(100);
   run(400 * 1000);
-  pressButton(LONG_PRESS_MS + 200);
+  pressButton(100);
   check(gPendingRuns == 1, "pending count set before the selector flip");
   gPinRead[PIN_RUNSEL] = HIGH;     // flip to one run
   run(200);
@@ -262,6 +275,46 @@ int main() {
   gPinRead[PIN_RUNSEL] = LOW;
   run(200);
   check(gPendingRuns == 1, "selector bounce does not clear the pending count");
+
+  // ---------------- the whole day, switch left in two-class mode ----------------
+  // Switch in 2 class mode. Tap to start. Fleet over early, tap to reset and
+  // wait. Tap again for a clean start that rolls into the second fleet. Second
+  // fleet over early, tap to reset and wait. Tap again: five minutes only.
+  printf("\n== officer's sequence ==\n");
+  gPendingRuns = 0;
+  gPinRead[PIN_RUNSEL] = LOW;      // two-class mode, and never touched again
+  run(2000);
+
+  pressButton(100);
+  check(gRunsLatched == 2, "first tap starts a two-class sequence");
+  run(120 * 1000);                 // class 1 over early, still the first half
+  pressButton(100);
+  check(gState == State::Idle, "tap resets, and waits");
+  run(45 * 1000);                  // race officer sorts the fleet out
+  check(gState == State::Idle, "still waiting, nothing runs on its own");
+
+  gHornEdges.clear();
+  pressButton(100);
+  check(gRunsLatched == 2, "next tap runs the clean start, both classes");
+  run(400 * 1000);                 // clean class 1 start, now in the second half
+  check(gState == State::Running, "rolled into the second fleet");
+  g = groupBlasts();
+  check(g.size() == 5, "class 1 got its four signals plus the 5:00 blast");
+
+  pressButton(100);                // second fleet over early
+  check(gState == State::Idle, "tap resets in the second half, and waits");
+  run(45 * 1000);
+  gHornEdges.clear();
+  pressButton(100);
+  check(gRunsLatched == 1, "final tap runs five minutes only");
+  run(330 * 1000);
+  g = groupBlasts();
+  check(g.size() == 4, "five minute sequence, 4 signals, got " + std::to_string(g.size()));
+  if (g.size() == 4) {
+    long span = (long)(g[3].startMs - g[0].startMs);
+    check(span >= 299500 && span <= 300500, "and it really is five minutes");
+  }
+  check(gPinRead[PIN_RUNSEL] == LOW, "the selector was never touched");
 
   printf("\n%s (%d failure%s)\n", gFailures ? "FAILED" : "PASSED", gFailures,
          gFailures == 1 ? "" : "s");

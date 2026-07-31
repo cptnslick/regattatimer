@@ -48,10 +48,14 @@ seconds at each start, and for thirty seconds after the last one.
 
 ## Controls
 
-- **Start / reset button** — tap while idle to arm the sequence. Tap after a
-  finished sequence to return to idle. Taps during a sequence are ignored, so a
-  knock against the panel cannot restart the countdown.
-- **Hold the button 1.5 s** — recall: abort, silence the horn, return to idle.
+- **Start / reset button** — one tap does everything. Tap while idle to send
+  them. Tap during a sequence to recall: the horn goes quiet and the timer
+  waits. Tap again when you are ready to send them. Taps in the first second
+  after arming are ignored, so a double tap cannot kill the sequence you just
+  started.
+- **Hold the button 1.5 s** — full reset. Same as a recall, but it also drops
+  the pending count so the next start follows the selector again. Rarely
+  needed, see below.
 - **Run selector** — read when you arm, so flipping it mid-sequence changes
   nothing. While idle, one lamp lit means the next press runs one class, two
   lamps means two.
@@ -75,14 +79,25 @@ only class 2 needs sending again.
 The pending count overrides the selector for that one start, and the idle lamps
 show it: one lamp after a second-half recall even with the switch still set to
 two. It is spent as soon as you start, so the sequence after that follows the
-switch again. To cancel it before then, flip the run selector — the flip is
-debounced, so switch bounce cannot throw the count away by accident.
+switch again.
+
+Leave the switch in two-class mode all day and the button alone runs everything:
+
+| You do | Timer does |
+|---|---|
+| tap | class 1 warning, sequence away |
+| fleet over early, tap | horn quiet, timer waits |
+| tap | clean start, rolls into class 2 |
+| class 2 over early, tap | horn quiet, timer waits |
+| tap | five minutes for class 2 only |
 
 Class 2 always follows class 1, so it never needs a start of its own. If class 1
 is the fleet over early — a recall right at the 5:00 mark, while class 2 has
-already picked up the countdown — flick the run selector to one and back to two
-before pressing start. That clears the pending count, and the full ten minutes
-runs again with class 2 following class 1 as usual.
+already picked up the countdown — hold the button 1.5 s instead of tapping it.
+That drops the pending count, and the next tap runs the full ten minutes with
+class 2 following class 1 as usual. Moving the run selector clears the pending
+count too; the flip is debounced, so switch bounce cannot throw it away by
+accident.
 
 ## Wiring
 

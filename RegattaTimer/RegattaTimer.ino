@@ -401,7 +401,7 @@ void setup() {
   Serial.begin(115200);
   delay(100);
   Serial.println("\n[timer] regatta start timer ready");
-  Serial.println("[timer] press start to arm, hold 1.5 s to abort");
+  Serial.println("[timer] tap start to arm, tap again to recall");
 
   // Lamp check, horn stays silent.
   for (uint8_t i = 0; i < 5; i++) {
@@ -419,7 +419,11 @@ void loop() {
 
   ButtonEvents btn = serviceButton(now);
   if (btn.longPress) {
+    // Full reset: drop any pending count so the selector governs the next
+    // start. The way back to a whole ten minutes without touching the switch.
     abortSequence(now);
+    gPendingRuns = 0;
+    Serial.println("[timer] full reset, selector governs the next start");
   } else if (btn.shortPress) {
     switch (gState) {
       case State::Idle:
@@ -429,7 +433,9 @@ void loop() {
         enterIdle("reset");
         break;
       case State::Running:
-        break; // ignore taps mid-sequence, hold to abort
+        // A tap is the recall: reset now, wait, tap again to send them.
+        if (now - gSequenceStartMs >= RESTART_GUARD_MS) abortSequence(now);
+        break;
     }
   }
 
