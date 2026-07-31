@@ -78,9 +78,11 @@ two. It is spent as soon as you start, so the sequence after that follows the
 switch again. To cancel it before then, flip the run selector — the flip is
 debounced, so switch bounce cannot throw the count away by accident.
 
-Recalling a class that has already started, while a later class is still
-counting down, is not something the timer tries to do. There is no good
-automatic answer, and most clubs restart that fleet after the others.
+Class 2 always follows class 1, so it never needs a start of its own. If class 1
+is the fleet over early — a recall right at the 5:00 mark, while class 2 has
+already picked up the countdown — flick the run selector to one and back to two
+before pressing start. That clears the pending count, and the full ten minutes
+runs again with class 2 following class 1 as usual.
 
 ## Wiring
 
