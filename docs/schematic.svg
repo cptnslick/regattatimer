@@ -1,0 +1,348 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 1060" width="1680" height="1060"
+     font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title>Regatta start timer - ESP32 schematic</title>
+
+  <defs>
+    <g id="gnd">
+      <line x1="0" y1="0" x2="0" y2="12"/>
+      <line x1="-13" y1="12" x2="13" y2="12"/>
+      <line x1="-8" y1="17" x2="8" y2="17"/>
+      <line x1="-3" y1="22" x2="3" y2="22"/>
+    </g>
+    <g id="res-h">
+      <rect x="0" y="-9" width="56" height="18" fill="#fff"/>
+    </g>
+    <g id="res-v">
+      <rect x="-9" y="0" width="18" height="56" fill="#fff"/>
+    </g>
+    <g id="diode-r">
+      <polygon points="0,-11 0,11 18,0" fill="#222"/>
+      <line x1="18" y1="-13" x2="18" y2="13"/>
+    </g>
+    <g id="diode-u">
+      <polygon points="-11,20 11,20 0,2" fill="#222"/>
+      <line x1="-13" y1="2" x2="13" y2="2"/>
+    </g>
+    <g id="cap">
+      <line x1="-15" y1="0" x2="15" y2="0"/>
+      <line x1="-15" y1="8" x2="15" y2="8"/>
+    </g>
+    <g id="fuse">
+      <rect x="0" y="-11" width="60" height="22" fill="#fff"/>
+      <line x1="0" y1="0" x2="60" y2="0"/>
+    </g>
+    <g id="lamp">
+      <circle cx="0" cy="0" r="15" fill="#fff"/>
+      <line x1="-10.6" y1="-10.6" x2="10.6" y2="10.6"/>
+      <line x1="-10.6" y1="10.6" x2="10.6" y2="-10.6"/>
+    </g>
+    <g id="sw">
+      <circle cx="0" cy="0" r="4" fill="#222" stroke="none"/>
+      <circle cx="56" cy="0" r="4" fill="#222" stroke="none"/>
+      <line x1="0" y1="0" x2="52" y2="-20"/>
+    </g>
+  </defs>
+
+  <rect x="0" y="0" width="1680" height="1060" fill="#ffffff"/>
+
+  <g fill="#111" stroke="none">
+    <text x="88" y="36" font-size="21" font-weight="700">Regatta start timer &#183; ESP32 &#183; schematic</text>
+    <text x="500" y="36" font-size="13" fill="#666">5-4-1-0 sailing start sequence &#8212; five panel lamps, one horn, two controls</text>
+  </g>
+
+  <g stroke="#222" stroke-width="2" fill="none" stroke-linecap="round">
+
+    <!-- ================= section titles ================= -->
+    <g stroke="none" fill="#8a6d3b" font-size="13" font-weight="700" letter-spacing="1.2">
+      <text x="88" y="66">POWER INPUT &#38; 5 V SUPPLY</text>
+      <text x="700" y="228">CONTROLLER</text>
+      <text x="1060" y="228">LAMP DRIVER</text>
+      <text x="320" y="620">CONTROLS (front panel)</text>
+      <text x="1000" y="628">HORN DRIVER</text>
+    </g>
+
+    <!-- ================= power input ================= -->
+    <rect x="88" y="88" width="44" height="94" fill="#fff"/>
+    <circle cx="110" cy="110" r="4" fill="#222"/>
+    <circle cx="110" cy="160" r="4" fill="#222"/>
+    <line x1="132" y1="110" x2="160" y2="110"/>
+    <line x1="110" y1="160" x2="110" y2="215"/>
+    <use href="#gnd" x="110" y="215"/>
+
+    <use href="#fuse" x="160" y="110"/>
+    <line x1="220" y1="110" x2="260" y2="110"/>
+    <use href="#diode-r" x="260" y="110"/>
+    <line x1="278" y1="110" x2="330" y2="110"/>
+
+    <!-- +12 V rail -->
+    <line x1="330" y1="110" x2="1560" y2="110" stroke-width="3"/>
+
+    <!-- C1 bulk -->
+    <line x1="345" y1="110" x2="345" y2="150"/>
+    <use href="#cap" x="345" y="150"/>
+    <line x1="345" y1="158" x2="345" y2="195"/>
+    <use href="#gnd" x="345" y="195"/>
+    <circle cx="345" cy="110" r="4" fill="#222"/>
+
+    <!-- D4 TVS -->
+    <line x1="415" y1="110" x2="415" y2="150"/>
+    <use href="#diode-u" x="415" y="150"/>
+    <line x1="415" y1="170" x2="415" y2="200"/>
+    <use href="#gnd" x="415" y="200"/>
+    <circle cx="415" cy="110" r="4" fill="#222"/>
+
+    <!-- U1 buck -->
+    <line x1="470" y1="110" x2="470" y2="170"/>
+    <circle cx="470" cy="110" r="4" fill="#222"/>
+    <rect x="440" y="170" width="150" height="70" fill="#fff"/>
+    <line x1="470" y1="240" x2="470" y2="290"/>
+    <use href="#gnd" x="470" y="290"/>
+    <line x1="590" y1="205" x2="650" y2="205"/>
+    <line x1="650" y1="205" x2="650" y2="290"/>
+    <line x1="650" y1="290" x2="700" y2="290"/>
+
+    <!-- C2 on the 5 V rail -->
+    <circle cx="650" cy="270" r="4" fill="#222"/>
+    <line x1="650" y1="270" x2="600" y2="270"/>
+    <line x1="600" y1="270" x2="600" y2="285"/>
+    <use href="#cap" x="600" y="285"/>
+    <line x1="600" y1="293" x2="600" y2="325"/>
+    <use href="#gnd" x="600" y="325"/>
+
+    <!-- ================= controller ================= -->
+    <rect x="700" y="240" width="240" height="520" fill="#fff"/>
+    <line x1="670" y1="330" x2="700" y2="330"/>
+    <line x1="670" y1="330" x2="670" y2="400"/>
+    <use href="#gnd" x="670" y="400"/>
+
+    <!-- controller nets to the lamp driver -->
+    <line x1="940" y1="270" x2="1060" y2="270"/>
+    <line x1="940" y1="315" x2="1060" y2="315"/>
+    <line x1="940" y1="360" x2="1060" y2="360"/>
+    <line x1="940" y1="405" x2="1060" y2="405"/>
+    <line x1="940" y1="450" x2="1060" y2="450"/>
+
+    <!-- ================= lamp driver ================= -->
+    <rect x="1060" y="240" width="140" height="235" fill="#fff"/>
+    <line x1="1130" y1="240" x2="1130" y2="110"/>
+    <circle cx="1130" cy="110" r="4" fill="#222"/>
+    <line x1="1130" y1="475" x2="1130" y2="515"/>
+    <use href="#gnd" x="1130" y="515"/>
+
+    <!-- lamp bus -->
+    <line x1="1370" y1="110" x2="1370" y2="450"/>
+    <circle cx="1370" cy="110" r="4" fill="#222"/>
+
+    <!-- lamp rows -->
+    <line x1="1200" y1="270" x2="1275" y2="270"/><use href="#lamp" x="1290" y="270"/><line x1="1305" y1="270" x2="1370" y2="270"/><circle cx="1370" cy="270" r="4" fill="#222"/>
+    <line x1="1200" y1="315" x2="1275" y2="315"/><use href="#lamp" x="1290" y="315"/><line x1="1305" y1="315" x2="1370" y2="315"/><circle cx="1370" cy="315" r="4" fill="#222"/>
+    <line x1="1200" y1="360" x2="1275" y2="360"/><use href="#lamp" x="1290" y="360"/><line x1="1305" y1="360" x2="1370" y2="360"/><circle cx="1370" cy="360" r="4" fill="#222"/>
+    <line x1="1200" y1="405" x2="1275" y2="405"/><use href="#lamp" x="1290" y="405"/><line x1="1305" y1="405" x2="1370" y2="405"/><circle cx="1370" cy="405" r="4" fill="#222"/>
+    <line x1="1200" y1="450" x2="1275" y2="450"/><use href="#lamp" x="1290" y="450"/><line x1="1305" y1="450" x2="1370" y2="450"/>
+
+    <!-- ================= horn driver ================= -->
+    <line x1="940" y1="680" x2="1000" y2="680"/>
+    <use href="#res-h" x="1000" y="680"/>
+    <line x1="1056" y1="680" x2="1120" y2="680"/>
+    <circle cx="1080" cy="680" r="4" fill="#222"/>
+    <line x1="1080" y1="680" x2="1080" y2="700"/>
+    <use href="#res-v" x="1080" y="700"/>
+    <line x1="1080" y1="756" x2="1080" y2="790"/>
+    <use href="#gnd" x="1080" y="790"/>
+
+    <!-- Q1 -->
+    <line x1="1120" y1="650" x2="1120" y2="710"/>
+    <line x1="1138" y1="646" x2="1138" y2="666"/>
+    <line x1="1138" y1="670" x2="1138" y2="690"/>
+    <line x1="1138" y1="694" x2="1138" y2="714"/>
+    <line x1="1138" y1="657" x2="1170" y2="657"/>
+    <line x1="1170" y1="657" x2="1170" y2="620"/>
+    <line x1="1138" y1="703" x2="1170" y2="703"/>
+    <line x1="1138" y1="680" x2="1170" y2="680"/>
+    <line x1="1170" y1="680" x2="1170" y2="790"/>
+    <polygon points="1138,680 1152,674 1152,686" fill="#222" stroke="none"/>
+    <use href="#gnd" x="1170" y="790"/>
+
+    <!-- K1 coil -->
+    <line x1="1170" y1="620" x2="1420" y2="620"/>
+    <rect x="1250" y="545" width="90" height="70" fill="#fff"/>
+    <line x1="1295" y1="615" x2="1295" y2="620"/>
+    <circle cx="1295" cy="620" r="4" fill="#222"/>
+    <line x1="1295" y1="545" x2="1295" y2="525"/>
+    <line x1="1295" y1="525" x2="1560" y2="525"/>
+
+    <!-- D2 flyback across the coil -->
+    <line x1="1420" y1="525" x2="1420" y2="552"/>
+    <use href="#diode-u" x="1420" y="552"/>
+    <line x1="1420" y1="572" x2="1420" y2="620"/>
+    <circle cx="1420" cy="525" r="4" fill="#222"/>
+
+    <!-- +12 V feed to the horn side -->
+    <line x1="1560" y1="110" x2="1560" y2="700"/>
+    <circle cx="1560" cy="525" r="4" fill="#222"/>
+
+    <!-- K1 contacts + F2 -->
+    <line x1="1560" y1="700" x2="1520" y2="700"/>
+    <use href="#fuse" x="1460" y="700"/>
+    <use href="#sw" x="1390" y="700"/>
+    <line x1="1446" y1="700" x2="1460" y2="700"/>
+    <line x1="1390" y1="700" x2="1390" y2="830"/>
+
+    <!-- horn -->
+    <rect x="1310" y="830" width="160" height="70" fill="#fff"/>
+    <line x1="1390" y1="900" x2="1390" y2="945"/>
+    <use href="#gnd" x="1390" y="945"/>
+
+    <!-- D3 flyback across the horn -->
+    <circle cx="1390" cy="805" r="4" fill="#222"/>
+    <line x1="1390" y1="805" x2="1520" y2="805"/>
+    <line x1="1520" y1="805" x2="1520" y2="835"/>
+    <use href="#diode-u" x="1520" y="835"/>
+    <line x1="1520" y1="855" x2="1520" y2="900"/>
+    <line x1="1520" y1="900" x2="1390" y2="900"/>
+    <circle cx="1390" cy="900" r="4" fill="#222"/>
+
+    <!-- ================= controls ================= -->
+    <line x1="700" y1="660" x2="620" y2="660"/>
+    <use href="#res-h" x="564" y="660"/>
+    <line x1="564" y1="660" x2="520" y2="660"/>
+    <circle cx="520" cy="660" r="4" fill="#222"/>
+    <line x1="520" y1="660" x2="520" y2="700"/>
+    <use href="#cap" x="520" y="700"/>
+    <line x1="520" y1="708" x2="520" y2="740"/>
+    <use href="#gnd" x="520" y="740"/>
+    <line x1="416" y1="660" x2="520" y2="660"/>
+    <use href="#sw" x="360" y="660"/>
+    <line x1="360" y1="660" x2="320" y2="660"/>
+    <line x1="320" y1="660" x2="320" y2="740"/>
+    <use href="#gnd" x="320" y="740"/>
+
+    <line x1="700" y1="720" x2="660" y2="720"/>
+    <line x1="660" y1="720" x2="660" y2="820"/>
+    <line x1="660" y1="820" x2="620" y2="820"/>
+    <use href="#res-h" x="564" y="820"/>
+    <line x1="564" y1="820" x2="520" y2="820"/>
+    <circle cx="520" cy="820" r="4" fill="#222"/>
+    <line x1="520" y1="820" x2="520" y2="860"/>
+    <use href="#cap" x="520" y="860"/>
+    <line x1="520" y1="868" x2="520" y2="900"/>
+    <use href="#gnd" x="520" y="900"/>
+    <line x1="416" y1="820" x2="520" y2="820"/>
+    <use href="#sw" x="360" y="820"/>
+    <line x1="360" y1="820" x2="320" y2="820"/>
+    <line x1="320" y1="820" x2="320" y2="900"/>
+    <use href="#gnd" x="320" y="900"/>
+  </g>
+
+  <!-- ================= text ================= -->
+  <g fill="#111" stroke="none" font-size="12.5">
+
+    <!-- power -->
+    <text x="140" y="80" font-size="12" font-weight="600">J1</text>
+    <text x="82" y="106" text-anchor="end" font-size="11">+12 V</text>
+    <text x="82" y="164" text-anchor="end" font-size="11">&#8722;</text>
+    <text x="190" y="88" text-anchor="middle" font-weight="600">F1</text>
+    <text x="190" y="140" text-anchor="middle" font-size="11">5 A</text>
+    <text x="269" y="88" text-anchor="middle" font-weight="600">D1</text>
+    <text x="269" y="140" text-anchor="middle" font-size="11">SB560</text>
+    <text x="336" y="100" font-size="12" font-weight="700" fill="#b00">+12 V</text>
+    <text x="322" y="154" text-anchor="end" font-weight="600">C1</text>
+    <text x="322" y="168" text-anchor="end" font-size="11">470 &#181;F</text>
+    <text x="415" y="248" text-anchor="middle" font-weight="600">D4</text>
+    <text x="415" y="263" text-anchor="middle" font-size="11">SMBJ16A</text>
+    <text x="515" y="199" text-anchor="middle" font-weight="700">U1</text>
+    <text x="515" y="216" text-anchor="middle" font-size="11">12 V &#8594; 5 V buck</text>
+    <text x="515" y="230" text-anchor="middle" font-size="11">1 A</text>
+    <text x="655" y="200" font-size="11" fill="#b00" font-weight="600">+5 V</text>
+    <text x="580" y="289" text-anchor="end" font-weight="600">C2</text>
+    <text x="580" y="303" text-anchor="end" font-size="11">100 &#181;F</text>
+
+    <!-- controller -->
+    <text x="820" y="470" text-anchor="middle" font-size="16" font-weight="700">U3</text>
+    <text x="820" y="492" text-anchor="middle" font-size="13">ESP32 DevKit v1</text>
+    <text x="820" y="512" text-anchor="middle" font-size="11" fill="#666">USB = programming only</text>
+    <text x="710" y="286" font-size="11">VIN</text>
+    <text x="710" y="326" font-size="11">GND</text>
+    <text x="710" y="656" font-size="11">GPIO4</text>
+    <text x="710" y="716" font-size="11">GPIO16</text>
+    <text x="930" y="266" text-anchor="end" font-size="11">GPIO32</text>
+    <text x="930" y="311" text-anchor="end" font-size="11">GPIO33</text>
+    <text x="930" y="356" text-anchor="end" font-size="11">GPIO25</text>
+    <text x="930" y="401" text-anchor="end" font-size="11">GPIO26</text>
+    <text x="930" y="446" text-anchor="end" font-size="11">GPIO27</text>
+    <text x="930" y="676" text-anchor="end" font-size="11">GPIO13</text>
+    <text x="710" y="676" font-size="10" fill="#666">pull-up</text>
+    <text x="710" y="736" font-size="10" fill="#666">pull-up</text>
+
+    <!-- lamp driver -->
+    <text x="1130" y="340" text-anchor="middle" font-size="15" font-weight="700">U2</text>
+    <text x="1130" y="360" text-anchor="middle" font-size="12">ULN2003A</text>
+    <text x="1130" y="377" text-anchor="middle" font-size="10.5" fill="#666">7 ch sink, 500 mA</text>
+    <text x="1130" y="392" text-anchor="middle" font-size="10.5" fill="#666">internal flyback</text>
+    <text x="1136" y="255" font-size="10.5">COM (9)</text>
+    <text x="1136" y="469" font-size="10.5">GND (8)</text>
+    <text x="1066" y="265" font-size="10">1B</text>
+    <text x="1066" y="310" font-size="10">2B</text>
+    <text x="1066" y="355" font-size="10">3B</text>
+    <text x="1066" y="400" font-size="10">4B</text>
+    <text x="1066" y="445" font-size="10">5B</text>
+    <text x="1194" y="265" text-anchor="end" font-size="10">1C</text>
+    <text x="1194" y="310" text-anchor="end" font-size="10">2C</text>
+    <text x="1194" y="355" text-anchor="end" font-size="10">3C</text>
+    <text x="1194" y="400" text-anchor="end" font-size="10">4C</text>
+    <text x="1194" y="445" text-anchor="end" font-size="10">5C</text>
+    <text x="1390" y="240" font-size="10.5" fill="#666">12 V panel indicators</text>
+    <text x="1390" y="274">LP1 &#183; 5 min</text>
+    <text x="1390" y="319">LP2 &#183; 4 min</text>
+    <text x="1390" y="364">LP3 &#183; 3 min</text>
+    <text x="1390" y="409">LP4 &#183; 2 min</text>
+    <text x="1390" y="454">LP5 &#183; 1 min</text>
+
+    <!-- horn driver -->
+    <text x="1028" y="666" text-anchor="middle" font-weight="600">R1</text>
+    <text x="1028" y="712" text-anchor="middle" font-size="11">220 &#8486;</text>
+    <text x="1064" y="722" text-anchor="end" font-weight="600">R2</text>
+    <text x="1064" y="736" text-anchor="end" font-size="11">10 k</text>
+    <text x="1010" y="762" text-anchor="middle" font-size="10.5" fill="#666">holds the horn</text>
+    <text x="1010" y="776" text-anchor="middle" font-size="10.5" fill="#666">off during boot</text>
+    <text x="1186" y="700" font-weight="600">Q1</text>
+    <text x="1186" y="716" font-size="11">IRLZ44N</text>
+    <text x="1295" y="575" text-anchor="middle" font-weight="700">K1</text>
+    <text x="1295" y="595" text-anchor="middle" font-size="11">12 V coil</text>
+    <text x="1436" y="578" font-weight="600">D2</text>
+    <text x="1436" y="594" font-size="11">1N4148</text>
+    <text x="1490" y="686" text-anchor="middle" font-weight="600">F2</text>
+    <text x="1490" y="726" text-anchor="middle" font-size="11">15 A</text>
+    <text x="1330" y="672" text-anchor="middle" font-size="11">K1 contacts</text>
+    <text x="1330" y="687" text-anchor="middle" font-size="10.5" fill="#666">NO, 30 A</text>
+    <text x="1390" y="862" text-anchor="middle" font-size="14" font-weight="700">HORN</text>
+    <text x="1390" y="882" text-anchor="middle" font-size="11">12 V air horn</text>
+    <text x="1538" y="852" font-weight="600">D3</text>
+    <text x="1538" y="868" font-size="11">1N5408</text>
+    <text x="1538" y="884" font-size="10.5" fill="#666">DC horn only</text>
+
+    <!-- controls -->
+    <text x="592" y="646" text-anchor="middle" font-weight="600">R3</text>
+    <text x="592" y="692" text-anchor="middle" font-size="11">1 k</text>
+    <text x="504" y="704" text-anchor="end" font-weight="600">C3</text>
+    <text x="504" y="718" text-anchor="end" font-size="11">100 nF</text>
+    <text x="388" y="626" text-anchor="middle" font-weight="600">SW1</text>
+    <text x="388" y="692" text-anchor="middle" font-size="11">start / reset</text>
+    <text x="388" y="706" text-anchor="middle" font-size="10.5" fill="#666">momentary NO</text>
+
+    <text x="592" y="806" text-anchor="middle" font-weight="600">R4</text>
+    <text x="592" y="852" text-anchor="middle" font-size="11">1 k</text>
+    <text x="504" y="864" text-anchor="end" font-weight="600">C4</text>
+    <text x="504" y="878" text-anchor="end" font-size="11">100 nF</text>
+    <text x="388" y="786" text-anchor="middle" font-weight="600">SW2</text>
+    <text x="388" y="852" text-anchor="middle" font-size="11">run selector</text>
+    <text x="388" y="866" text-anchor="middle" font-size="10.5" fill="#666">closed = two runs</text>
+
+    <!-- notes -->
+    <text x="88" y="960" font-size="13" font-weight="700" fill="#8a6d3b">NOTES</text>
+    <text x="88" y="983" font-size="12">1 &#160; All grounds are common. Take the horn return straight back to the battery negative in heavy cable, not through the logic ground.</text>
+    <text x="88" y="1003" font-size="12">2 &#160; R2 is what keeps the horn silent while the ESP32 boots and GPIO13 is still floating. ULN2003 inputs idle low, so the lamps stay dark too.</text>
+    <text x="88" y="1023" font-size="12">3 &#160; SW1 and SW2 use the ESP32 internal pull-ups; R3/R4 and C3/C4 are for cable noise only, the firmware does the real debouncing.</text>
+    <text x="88" y="1043" font-size="12">4 &#160; If a driver stage inverts, set LED_ACTIVE_HIGH or HORN_ACTIVE_HIGH to false in config.h rather than rewiring.</text>
+  </g>
+</svg>

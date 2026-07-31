@@ -127,6 +127,10 @@ DC klaxon, and run the horn off its own supply with a common ground.
 If your hardware sinks current rather than sourcing it, set `LED_ACTIVE_HIGH`
 or `HORN_ACTIVE_HIGH` to `false` in `config.h` instead of rewiring.
 
+[`docs/HARDWARE.md`](docs/HARDWARE.md) has the full circuit diagram, the parts
+list, a net list and a power budget for a 12 V build with panel lamps and an air
+horn.
+
 ## Timing
 
 Everything runs off `millis()` in a non-blocking loop, so blast lengths and
